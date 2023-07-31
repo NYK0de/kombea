@@ -4,7 +4,13 @@ plugins {
     id 'dagger.hilt.android.plugin'
     id 'kotlin-kapt'
 }
+def localPropertiesFile = rootProject.file('local.properties')
+def localProperties = new Properties()
 
+// Check if local.properties exists and load its content
+if (localPropertiesFile.exists()) {
+    localProperties.load(new FileInputStream(localPropertiesFile))
+}
 android {
     namespace 'com.example.data'
     compileSdk project.compileSdkVersion
@@ -12,6 +18,13 @@ android {
     defaultConfig {
         minSdk project.minSdkVersion
         targetSdk project.targetSdkVersion
+
+        def apiUrl = localProperties.getProperty('apiUrl')
+        def apiKey = localProperties.getProperty('apiKey')
+
+        // Use the secure info in your app
+        buildConfigField "String", "API_KEY", "\"$apiKey\""
+        buildConfigField "String", "API_URL", "\"$apiUrl\""
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
